@@ -19,6 +19,7 @@
     video: "assets/video/journey.mp4",          // 1080p H.264 — laptops and desktops
     videoSmall: "assets/video/journey-720.mp4", // 720p H.264 — phones (lighter to decode while scrubbing)
     videoFallback: "assets/video/journey.webm", // 1080p VP9 — browsers without H.264
+    motion: "assets/video/motion.json",         // per-frame motion, for steady camera speed
     segments: [
       { scene: 0, dur: 5, weight: 2.2 },   // gate opens
       { dur: 4, weight: 1.1 },             // → staircase → hall
@@ -98,16 +99,52 @@
   var segs = [];
   var totalWeight = 0;
 
+  // Motion-balanced timeline.
+  // motion.json holds how much the picture changes between consecutive frames
+  // (measured with ffmpeg). Scroll distance is shared out partly by time and
+  // partly by visible motion, so slow stretches and the near-still frames at
+  // each clip seam pass quickly and fast moves get more room: the camera seems
+  // to move at a steady speed instead of pausing and lurching at each seam.
+  var MOTION_BLEND = 0.55;   // 0 = plain time, 1 = purely by motion
+  var motion = null;         // per-frame-interval motion values
+  var W = null;              // cumulative scroll weight at each frame boundary
+  var frameDt = 0;
+
+  function buildMotionTable(videoDuration, filmWeight) {
+    if (!motion || !motion.length || !videoDuration) { W = null; return; }
+    var sorted = motion.slice().sort(function (a, b) { return a - b; });
+    var cap = 2.5 * sorted[Math.floor(sorted.length / 2)];
+    var mean = 0, m = motion.map(function (x) { var v = Math.min(x, cap); mean += v; return v; });
+    mean /= m.length;
+    W = [0];
+    var acc = 0;
+    m.forEach(function (v) { acc += MOTION_BLEND * v / mean + (1 - MOTION_BLEND); W.push(acc); });
+    for (var k = 0; k < W.length; k++) W[k] = W[k] / acc * filmWeight;
+    frameDt = videoDuration / m.length;
+  }
+
+  function weightAt(t) {                 // film time → scroll weight
+    var x = t / frameDt, k = Math.min(W.length - 2, Math.max(0, Math.floor(x)));
+    return W[k] + (W[k + 1] - W[k]) * Math.min(1, Math.max(0, x - k));
+  }
+
+  function timeAt(w) {                   // scroll weight → film time
+    var lo = 0, hi = W.length - 1;
+    while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (W[mid] <= w) lo = mid; else hi = mid; }
+    var span = W[hi] - W[lo];
+    return (lo + (span > 0 ? (w - W[lo]) / span : 0)) * frameDt;
+  }
+
   function buildTimeline(videoDuration) {
     var nominal = CONFIG.segments.reduce(function (s, g) { return s + g.dur; }, 0);
     var scale = videoDuration ? videoDuration / nominal : 1;
+    var filmWeight = CONFIG.segments.reduce(function (s, g) { return s + (g.hold ? 0 : g.weight); }, 0);
+    buildMotionTable(videoDuration, filmWeight);
     var t = 0, w = 0;
     segs = CONFIG.segments.map(function (g) {
-      var seg = {
-        scene: g.scene, hold: !!g.hold,
-        t0: t, t1: t + g.dur * scale,
-        w0: w, w1: w + g.weight
-      };
+      var t1 = t + g.dur * scale;
+      var w1 = (W && !g.hold) ? weightAt(t1) : w + g.weight;
+      var seg = { scene: g.scene, hold: !!g.hold, t0: t, t1: t1, w0: w, w1: w1 };
       t = seg.t1; w = seg.w1;
       return seg;
     });
@@ -122,9 +159,11 @@
     for (var i = 0; i < segs.length; i++) {
       var s = segs[i];
       if (w <= s.w1 || i === segs.length - 1) {
-        var local = (w - s.w0) / (s.w1 - s.w0);
+        var local = (w - s.w0) / Math.max(1e-6, s.w1 - s.w0);
         local = Math.max(0, Math.min(1, local));
-        var time = s.hold ? s.t1 : s.t0 + (s.t1 - s.t0) * local;
+        var time = s.hold ? s.t1
+          : W ? Math.min(s.t1, Math.max(s.t0, timeAt(w)))
+          : s.t0 + (s.t1 - s.t0) * local;
         return { time: time, index: i, local: local };
       }
     }
@@ -265,7 +304,7 @@
     if (ready && !reduced) {
       // ease toward the scroll target; snap when close
       var diff = target - shown;
-      shown = Math.abs(diff) < 0.002 ? target : shown + diff * 0.2;
+      shown = Math.abs(diff) < 0.002 ? target : shown + diff * 0.16;
       if (!seeking && Math.abs(video.currentTime - shown) > 0.012) {
         video.currentTime = shown;
       }
@@ -294,6 +333,10 @@
   }
 
   function loadVideo() {
+    var motionReady = fetch(CONFIG.motion)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (m) { motion = m; })
+      .catch(function () { motion = null; });
     return fetch(pickSource()).then(function (res) {
       if (!res.ok) throw new Error("Video not found (" + res.status + ")");
       var total = Number(res.headers.get("Content-Length")) || 0;
@@ -316,6 +359,8 @@
         video.addEventListener("loadedmetadata", resolve, { once: true });
         video.addEventListener("error", function () { reject(new Error("Video could not be decoded")); }, { once: true });
       });
+    }).then(function () {
+      return motionReady;
     }).then(function () {
       buildTimeline(video.duration);
       layout();

@@ -4,7 +4,7 @@
 # Usage: bash scripts/build-media.sh path/to/film.mp4 path/to/music.mp3
 #
 # Produces:
-#   assets/video/journey.mp4   H.264 1080p, no audio, GOP 8 (smooth scroll-scrubbing), faststart
+#   assets/video/journey.mp4   H.264 1080p, no audio, GOP 4 (smooth scroll-scrubbing), faststart
 #   assets/video/journey.webm  VP9 fallback for browsers without H.264
 #   assets/stills/scene-N-*.webp  first frame of each scene (poster + reduced-motion stills)
 #   assets/audio/music.mp3     soundtrack, loudness-normalised with soft fade in/out
@@ -17,11 +17,11 @@ echo "Source:"; ffprobe -v error -show_entries stream=codec_type,width,height,r_
 
 # 1. Video for scrubbing: audio stripped (the clips' own sound restarted at every seam)
 ffmpeg -v error -y -i "$film" -an -vf "scale=1920:1080:flags=lanczos,format=yuv420p" \
-  -c:v libx264 -preset slow -crf 23 -g 8 -keyint_min 8 -sc_threshold 0 -movflags +faststart assets/video/journey.mp4
-ffmpeg -v error -y -i assets/video/journey.mp4 -an -c:v libvpx-vp9 -b:v 0 -crf 40 -g 8 -row-mt 1 -deadline good -cpu-used 4 assets/video/journey.webm
+  -c:v libx264 -preset slow -crf 24 -g 4 -keyint_min 4 -sc_threshold 0 -movflags +faststart assets/video/journey.mp4
+ffmpeg -v error -y -i assets/video/journey.mp4 -an -c:v libvpx-vp9 -b:v 0 -crf 40 -g 4 -row-mt 1 -deadline good -cpu-used 4 assets/video/journey.webm
 # Lighter 720p version for phones (downscaled from the sharper 1080p source, short GOP for cheap seeks)
 ffmpeg -v error -y -i "$film" -an -vf "scale=1280:720:flags=lanczos,format=yuv420p" \
-  -c:v libx264 -preset slow -crf 23 -g 6 -keyint_min 6 -sc_threshold 0 -movflags +faststart assets/video/journey-720.mp4
+  -c:v libx264 -preset slow -crf 25 -g 4 -keyint_min 4 -sc_threshold 0 -movflags +faststart assets/video/journey-720.mp4
 
 # 2. Scene posters at the start of each scene (segment lengths match app.js: 5,4,4,4,4,4,4,4,5)
 dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 assets/video/journey.mp4)
