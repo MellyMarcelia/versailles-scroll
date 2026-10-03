@@ -36,7 +36,7 @@ python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
 ## Credits
-Concept, art direction and build: Mael Pignol. Images, film and music generated with
+Concept, art direction and build: Melly Marcelia. Images, film and music generated with
 Magnific (Nano Banana 2, Ideogram 4.5, Seedance 2.5, Lyria 3 Pro) via the Magnific MCP.
 Scroll technique adapted from [oso95/scroll-world](https://github.com/oso95/scroll-world).
 Style inspired by fashion illustrators @beezoonu and @audrey.aan.
