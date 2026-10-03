@@ -28,12 +28,11 @@ watercolour. Scroll down to walk forward, scroll up to walk back.
 | `PROCESS.md` | Production log: workflow, decisions, credits |
 | `scripts/build-media.sh` | Encode the film for scrubbing, extract posters, prepare music |
 | `scripts/frames.sh`, `scripts/seamcheck.sh` | Extract seam frames / measure seams |
-| `scripts/qa.py` | Playwright test: scrolls forward and backward, checks timeline + overlays |
 
 ## Run locally
-```bash
-python3 -m http.server 8000   # then open http://localhost:8000
-```
+Open the folder in VS Code, install the **Live Server** extension, then right-click
+`index.html` → **Open with Live Server**. (Double-clicking `index.html` won't work: the
+browser blocks the film from loading straight from a file.)
 
 ## Tools
 Built in **Claude** connected to the **Magnific MCP** (instead of Codex): planning, prompt writing, image/video/music/sound generation, ffmpeg processing and the website code. All creative decisions (story, style, scenes, camera, typography, sound) were made and reviewed by me.
