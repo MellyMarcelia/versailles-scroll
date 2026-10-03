@@ -19,7 +19,6 @@
     video: "assets/video/journey.mp4",          // 1080p H.264 — laptops and desktops
     videoSmall: "assets/video/journey-720.mp4", // 720p H.264 — phones (lighter to decode while scrubbing)
     videoFallback: "assets/video/journey.webm", // 1080p VP9 — browsers without H.264
-    music: { volume: 0.55, fadeMs: 1200 },
     segments: [
       { scene: 0, dur: 5, weight: 2.2 },   // gate opens
       { dur: 4, weight: 1.1 },             // → staircase → hall
@@ -271,6 +270,7 @@
         video.currentTime = shown;
       }
     }
+    tickSound(ready && !reduced ? shown : target);
     requestAnimationFrame(tick);
   }
 
@@ -338,32 +338,150 @@
   window.addEventListener("touchstart", primeVideo, { once: true, passive: true });
 
   // ---------------------------------------------------------------------------
-  // Music: one continuous track under the whole journey (never cut by seams)
+  // Sound: continuous music + scroll-synced sound effects (Web Audio)
+  //
+  // - Music plays under the whole journey, so it never cuts at a seam.
+  // - One-shots (gate, doors, window) fire when the film crosses their moment,
+  //   in either scroll direction (the gate creaks closed too when scrolling up).
+  // - Ambience loops (chandeliers, trees) fade in and out with the film position.
+  // Everything sits behind one master volume controlled by the sound button.
   // ---------------------------------------------------------------------------
-  var fadeTimer = null;
-  function fadeMusic(to, done) {
-    clearInterval(fadeTimer);
-    var from = music.volume, start = performance.now();
-    fadeTimer = setInterval(function () {
-      var k = Math.min(1, (performance.now() - start) / CONFIG.music.fadeMs);
-      music.volume = from + (to - from) * k;
-      if (k === 1) { clearInterval(fadeTimer); if (done) done(); }
-    }, 30);
+  var SOUND = {
+    musicLevel: 0.5,
+    // [segment index, fraction through the segment]
+    oneShots: [
+      { file: "assets/audio/sfx-gate.mp3",   at: [0, 0.06], level: 0.9 },  // gate swings open
+      { file: "assets/audio/sfx-door.mp3",   at: [1, 0.10], level: 0.8 },  // palace doors
+      { file: "assets/audio/sfx-door.mp3",   at: [3, 0.60], level: 0.7 },  // doorway into the bedchamber
+      { file: "assets/audio/sfx-window.mp3", at: [5, 0.08], level: 0.8 }   // bedchamber window opens
+    ],
+    // fade in from → full from → full until → silent at
+    ambience: [
+      { file: "assets/audio/amb-chandelier.mp3", level: 0.55,
+        shape: [[1, 0.55], [2, 0.0], [2, 1.0], [3, 0.5]] },               // Hall of Mirrors
+      { file: "assets/audio/amb-garden.mp3", level: 0.5,
+        shape: [[5, 0.45], [6, 0.1], [9, 1.0], [9, 1.0]] }                // gardens → Hamlet → end
+    ]
+  };
+
+  var actx = null, master = null, buffers = {}, loops = [], soundOn = false;
+  var lastSoundTime = null, cueCooldown = {};
+
+  function segTime(ref) {
+    var s = segs[Math.min(ref[0], segs.length - 1)];
+    return s.t0 + (s.t1 - s.t0) * ref[1];
+  }
+
+  function loadBuffer(url) {
+    if (buffers[url]) return buffers[url];
+    buffers[url] = fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error(url); return r.arrayBuffer(); })
+      .then(function (data) {
+        return new Promise(function (res, rej) { actx.decodeAudioData(data, res, rej); });
+      })
+      .catch(function () { return null; });   // a missing sound is skipped, never fatal
+    return buffers[url];
+  }
+
+  function initAudio() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    actx = new AC();
+    master = actx.createGain();
+    master.gain.value = 0;
+    master.connect(actx.destination);
+
+    // music: the <audio> element routed through Web Audio (volume works on iOS too)
+    var musicGain = actx.createGain();
+    musicGain.gain.value = SOUND.musicLevel;
+    actx.createMediaElementSource(music).connect(musicGain);
+    musicGain.connect(master);
+
+    // ambience loops start silent and are faded by tickSound()
+    SOUND.ambience.forEach(function (a) {
+      var g = actx.createGain();
+      g.gain.value = 0;
+      g.connect(master);
+      var loop = { def: a, gain: g };
+      loops.push(loop);
+      loadBuffer(a.file).then(function (buf) {
+        if (!buf) return;
+        var src = actx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        src.connect(g);
+        src.start();
+      });
+    });
+    SOUND.oneShots.forEach(function (o) { loadBuffer(o.file); });
+    return true;
+  }
+
+  function playOnce(def) {
+    loadBuffer(def.file).then(function (buf) {
+      if (!buf || !soundOn) return;
+      var src = actx.createBufferSource();
+      var g = actx.createGain();
+      g.gain.value = def.level;
+      src.buffer = buf;
+      src.connect(g);
+      g.connect(master);
+      src.start();
+    });
+  }
+
+  function trapezoid(t, shape) {
+    var a = segTime(shape[0]), b = segTime(shape[1]), c = segTime(shape[2]), d = segTime(shape[3]);
+    if (t <= a || t > d + 0.001 && d > c) return 0;
+    if (t < b) return (t - a) / Math.max(0.001, b - a);
+    if (t <= c) return 1;
+    return Math.max(0, 1 - (t - c) / Math.max(0.001, d - c));
+  }
+
+  // called every animation frame with the film time currently on screen
+  function tickSound(t) {
+    if (!actx || !soundOn || !segs.length) { lastSoundTime = t; return; }
+    var now = actx.currentTime;
+
+    loops.forEach(function (l) {
+      l.gain.gain.setTargetAtTime(l.def.level * trapezoid(t, l.def.shape), now, 0.12);
+    });
+
+    if (lastSoundTime !== null && lastSoundTime !== t) {
+      var lo = Math.min(lastSoundTime, t), hi = Math.max(lastSoundTime, t);
+      // ignore big jumps (rail clicks, restart) so we don't fire a burst of sounds
+      if (hi - lo < 3) {
+        SOUND.oneShots.forEach(function (o, i) {
+          var at = segTime(o.at);
+          if (at > lo && at <= hi && !(cueCooldown[i] > performance.now())) {
+            cueCooldown[i] = performance.now() + 1500;
+            playOnce(o);
+          }
+        });
+      }
+    }
+    lastSoundTime = t;
+  }
+
+  function setSound(on) {
+    soundOn = on;
+    soundBtn.setAttribute("aria-pressed", String(on));
+    soundBtn.textContent = on ? "Turn sound off" : "Turn sound on";
+    if (on) {
+      if (!actx && !initAudio()) { soundBtn.hidden = true; return; }
+      actx.resume();
+      music.play().catch(function () {});
+      master.gain.cancelScheduledValues(actx.currentTime);
+      master.gain.setTargetAtTime(1, actx.currentTime, 0.4);
+    } else if (actx) {
+      master.gain.cancelScheduledValues(actx.currentTime);
+      master.gain.setTargetAtTime(0, actx.currentTime, 0.25);
+      setTimeout(function () { if (!soundOn) music.pause(); }, 1200);
+    }
   }
 
   soundBtn.addEventListener("click", function () {
-    var on = soundBtn.getAttribute("aria-pressed") !== "true";
-    soundBtn.setAttribute("aria-pressed", String(on));
-    soundBtn.textContent = on ? "Pause music" : "Play music";
-    if (on) {
-      music.volume = 0;
-      music.play().then(function () { fadeMusic(CONFIG.music.volume); }).catch(function () {
-        soundBtn.setAttribute("aria-pressed", "false");
-        soundBtn.textContent = "Play music";
-      });
-    } else {
-      fadeMusic(0, function () { music.pause(); });
-    }
+    setSound(soundBtn.getAttribute("aria-pressed") !== "true");
   });
   music.addEventListener("error", function () { soundBtn.hidden = true; });
 
