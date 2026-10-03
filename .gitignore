@@ -1,3 +1,5 @@
 raw/
 .DS_Store
 node_modules/
+assets/stills/source/
+__pycache__/
