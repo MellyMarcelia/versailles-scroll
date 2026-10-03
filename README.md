@@ -1,4 +1,4 @@
-# Le Carnet de Marie-Antoinette
+# The Diary of Marie-Antoinette
 
 A scroll-driven walk through Versailles in Marie-Antoinette's footsteps — the Royal Gate,
 the Hall of Mirrors, her bedchamber, the gardens and the Queen's Hamlet — painted in ink and
