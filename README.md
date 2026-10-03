@@ -4,7 +4,7 @@ A scroll-driven walk through Versailles in Marie-Antoinette's footsteps — the 
 the Hall of Mirrors, her bedchamber, the gardens and the Queen's Hamlet — painted in ink and
 watercolour. Scroll down to walk forward, scroll up to walk back.
 
-**Live site:** _coming soon_ · **Repository:** _this repo_
+**Live site:** https://mellymarcelia.github.io/versailles-scroll/ · **Repository:** _this repo_
 
 ## How it works
 - **One pre-rendered film** (5 scenes + 4 transitions, ~38 s, 1080p; 720p on phones) is scrubbed by scroll
@@ -15,7 +15,7 @@ watercolour. Scroll down to walk forward, scroll up to walk back.
 - **Smooth scrubbing:** the film is fetched as a Blob (always seekable), encoded with a short
   keyframe interval (GOP 6), and seeks are smoothed and coalesced on every animation frame.
 - **Sound:** the clips' generated audio is removed; one continuous soundtrack plays under the
-  whole page (opt-in via the sound button), so audio never cuts at a seam.
+  whole page (opt-in via the sound button), so audio never cuts at a seam. Scroll-synced sound effects (gate, doors, window, chandeliers, trees) are triggered by the film timeline with Web Audio.
 - **Fallbacks:** `prefers-reduced-motion` shows the five scene paintings as cross-fading stills;
   a VP9 WebM is served to browsers without H.264.
 
