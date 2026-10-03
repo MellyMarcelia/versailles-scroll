@@ -7,7 +7,7 @@ watercolour. Scroll down to walk forward, scroll up to walk back.
 **Live site:** _coming soon_ · **Repository:** _this repo_
 
 ## How it works
-- **One pre-rendered film** (5 scenes + 4 transitions, ~38 s, 720p) is scrubbed by scroll
+- **One pre-rendered film** (5 scenes + 4 transitions, ~38 s, 1080p; 720p on phones) is scrubbed by scroll
   position: `scroll progress → point on the film's timeline → video.currentTime` (`app.js`).
 - **Seamless transitions:** each transition was generated with Seedance 2.5 keyframes — its
   first frame is the *actual last frame* of the previous scene clip and its last frame is the
@@ -40,3 +40,10 @@ Concept, art direction and build: Mael Pignol. Images, film and music generated 
 Magnific (Nano Banana 2, Ideogram 4.5, Seedance 2.5, Lyria 3 Pro) via the Magnific MCP.
 Scroll technique adapted from [oso95/scroll-world](https://github.com/oso95/scroll-world).
 Style inspired by fashion illustrators @beezoonu and @audrey.aan.
+
+## Publish on GitHub Pages
+1. Push this repository to GitHub.
+2. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
+   branch `main`, folder `/ (root)` → **Save**.
+3. After a minute the site is live at `https://<your-username>.github.io/<repo-name>/`.
+   Put that link at the top of this README.

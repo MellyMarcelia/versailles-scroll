@@ -16,8 +16,9 @@
   // weight = how much scrolling the segment gets (1 = one screen height)
   // ---------------------------------------------------------------------------
   var CONFIG = {
-    video: "assets/video/journey.mp4",        // H.264 — Safari, Chrome, Edge, Firefox
-    videoFallback: "assets/video/journey.webm", // VP9 — browsers without H.264
+    video: "assets/video/journey.mp4",          // 1080p H.264 — laptops and desktops
+    videoSmall: "assets/video/journey-720.mp4", // 720p H.264 — phones (lighter to decode while scrubbing)
+    videoFallback: "assets/video/journey.webm", // 1080p VP9 — browsers without H.264
     music: { volume: 0.55, fadeMs: 1200 },
     segments: [
       { scene: 0, dur: 5, weight: 2.2 },   // gate opens
@@ -241,6 +242,7 @@
     var last = segs.length - 1;
     var showFinale = loc.index === last || (loc.index === last - 1 && loc.local > 0.8);
     finale.classList.toggle("is-visible", showFinale);
+    document.body.classList.toggle("finale-on", showFinale);
   }
 
   // ---------------------------------------------------------------------------
@@ -283,7 +285,9 @@
 
   function pickSource() {
     var h264 = video.canPlayType('video/mp4; codecs="avc1.640028"');
-    return h264 ? CONFIG.video : CONFIG.videoFallback;
+    if (!h264) return CONFIG.videoFallback;
+    var small = isTouch || Math.min(screen.width, screen.height) < 700;
+    return small ? CONFIG.videoSmall : CONFIG.video;
   }
 
   function loadVideo() {
@@ -347,12 +351,12 @@
   soundBtn.addEventListener("click", function () {
     var on = soundBtn.getAttribute("aria-pressed") !== "true";
     soundBtn.setAttribute("aria-pressed", String(on));
-    soundBtn.textContent = on ? "Sound on" : "Sound off";
+    soundBtn.textContent = on ? "Pause music" : "Play music";
     if (on) {
       music.volume = 0;
       music.play().then(function () { fadeMusic(CONFIG.music.volume); }).catch(function () {
         soundBtn.setAttribute("aria-pressed", "false");
-        soundBtn.textContent = "Sound off";
+        soundBtn.textContent = "Play music";
       });
     } else {
       fadeMusic(0, function () { music.pause(); });

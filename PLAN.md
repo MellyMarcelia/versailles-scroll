@@ -1,5 +1,11 @@
 # Carnet de Versailles — Step 1: Research + Plan
 
+> **Final version vs. this plan.** After the Step 2 test the project grew to
+> **5 scenes + 4 transitions (~38 s)**: the Queen's Hamlet was added as the finale, the art
+> went **full-bleed** (no paper border), every clip got its own gentle camera move, the text
+> became Marie-Antoinette's diary, and the clips' audio was replaced by one continuous
+> soundtrack. See `PROCESS.md` for every decision and `README.md` for the final build.
+
 A scroll-driven walk through the Palace of Versailles, drawn as a fashion-illustration
 sketchbook. Scroll forward to walk in; scroll back to walk out.
 
