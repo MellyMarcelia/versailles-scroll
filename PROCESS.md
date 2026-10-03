@@ -19,14 +19,21 @@
 | Add more of Versailles | Fifth scene: the Queen's Hamlet as the finale (max length raised to 40 s) |
 | Faded paper border looked unfinished on screen | All five stills repainted full-bleed (Ideogram precise edit); every clip regenerated with "fully painted edge to edge" |
 | Audio cut between scenes | Clip audio stripped; one continuous soundtrack (Lyria 3 Pro) under the page |
+| Hall → Bedchamber: a window morphed into a door | The prompt asked to "turn through a side door" that wasn't in the frame, so the model invented one. Re-rolled following the real layout (end of the Hall → Salon of Peace → already-open doorway) with an explicit "nothing morphs, no new doors appear" rule |
 
 ## Final chain (720p, Seedance 2.5)
 Gate 5 s → Staircase transition 4 s → Hall 4 s → Side-door transition 4 s → Bedchamber 4 s
 → Window/crane transition 4 s → Gardens 4 s → Aerial transition 4 s → Hamlet 5 s = **38 s**.
 
+## Upscale
+The joined 720p film was upscaled to 1080p with **Magnific Precision** (sharpens existing
+detail without redrawing, so the watercolour style and the seams stay intact). The site serves
+1080p to laptops/desktops and a 720p version (downscaled from the 1080p) to phones, where
+decoding a frame on every scroll step is more expensive.
+
 ## Credits (Magnific, approximate)
 Stills and edits ~2,000 · 480p test + previz chain ~8,900 · 720p final chain ~16,700 ·
-music 160 · **total ~28,000**.
+music 160 · re-rolls ~4,000 · 1080p upscale ~15,900 · **total ~48,000**.
 
 ## Lessons
 - Run `simulate_cost` before every batch; image crops cost 40 credits (AI expand), not 1.
