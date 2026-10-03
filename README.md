@@ -35,6 +35,9 @@ watercolour. Scroll down to walk forward, scroll up to walk back.
 python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
+## Tools
+Built in **Claude** connected to the **Magnific MCP** (instead of Codex): planning, prompt writing, image/video/music/sound generation, ffmpeg processing and the website code. All creative decisions (story, style, scenes, camera, typography, sound) were made and reviewed by me.
+
 ## Credits
 Concept, art direction and build: Melly Marcelia. Images, film and music generated with
 Magnific (Nano Banana 2, Ideogram 4.5, Seedance 2.5, Lyria 3 Pro) via the Magnific MCP.
