@@ -34,15 +34,80 @@ sketchbook. Scroll forward to walk in; scroll back to walk out.
   building, so this project uses forward-only motion (see Camera).
 
 ### Other scroll-driven sites studied
-| Site | What I took from it |
-|---|---|
-| Apple AirPods Pro product page | Scroll-scrubbed frame sequence; text appears only while the image holds still. |
-| Igloo Inc (igloo.inc) | A whole world behind one scroll; minimal UI chrome, strong progress cues. |
-| NYT "Snow Fall" | Pacing long-form story to scroll; text as short beats, not paragraphs. |
-| SBS "The Boat" | Illustrated scrollytelling — proof that a drawn world can carry a scroll story. |
-| The Pudding (pudding.cool) | Clear "scroll" affordances and a clean ending. |
 
-*(Fill in your own notes after visiting each — scroll cue, text pacing, ending.)*
+**1. Emergence** — [emergenceprojects.com](https://emergenceprojects.com)
+- *What it is:* the site of an art/design studio, built as one illustrated scene: two robed
+  figures in a tiled, Moorish-style room in fine black-and-white engraving style, with
+  stars and orbs hanging from the ceiling.
+- *Scroll:* the page itself does not move. Each scroll tick pushes the camera deeper into the
+  picture: the figures slide out of frame, the arch fills the screen and the floating
+  objects drift apart. It is made of dozens of layered images (no video, no 3D).
+- *Text and cue:* one line only, "Play is what turns everyday life into a fairy tale", with a
+  small scroll indicator under it.
+- *Ending:* the floating objects become the menu (story, projects, shop, about) — the
+  navigation grows out of the world instead of sitting on top of it.
+- *What I took:* proof that an **illustrated, fairy-tale world** works as a scroll experience;
+  one short poetic line per moment; the camera pushes *into* the drawing.
+
+**2. Montfort Group** — [mont-fort.com](https://mont-fort.com)
+- *What it is:* a commodity trading and investment group.
+- *Scroll:* opens on a snowy mountain peak above the clouds with the logo; scrolling sinks the
+  camera into the clouds, and each business division appears out of the fog (e.g. an oil
+  tanker at sea for Montfort Trading). Built with WebGL canvases.
+- *Transitions:* clouds are the connecting tissue between very different scenes, so the
+  journey never cuts.
+- *Text and cue:* a clear "Swipe down" cue with an arrow at the bottom of the first screen;
+  large uppercase statements appear between scenes; up/down arrow buttons on the right.
+- *What I took:* every change of place needs a **connecting move** (mine: gate → doors →
+  staircase, window → sky → garden); a bottom-of-screen scroll cue on the opening view.
+
+**3. Son Daven** — [sondaven.com/en](https://sondaven.com/en)
+- *What it is:* an investment site for a design resort hotel in the Ukrainian Carpathians.
+- *Scroll:* long, smooth-scrolled page (Lenis smooth scrolling, about 35 screen heights) with
+  many small WebGL canvases for image effects and looping videos; it opens with a short
+  looping animation while it loads.
+- *Text:* it tells a story before it sells — a "Prologue" in poetic language ("where the wind
+  becomes a voice…") and "Where the mountains speak", then local legends and places.
+- *Ending:* practical — invest, download the PDF, consultation and contact form.
+- *What I took:* **story first, information after** — my diary entries carry the emotion,
+  and the practical "Plan your visit" comes only at the very end; a loading moment that
+  already belongs to the world ("Opening the notebook…").
+
+**4. Made in Evolve** — [madeinevolve.com](https://madeinevolve.com)
+- *What it is:* an eCommerce/Shopify Plus agency in Modena, Italy.
+- *Scroll:* a conventional page made to feel premium: smooth scrolling (Lenis), a very large
+  headline split line by line ("We are an / eCommerce / Innovation / Agency"), case studies
+  revealed as you scroll, a showreel video and a sticky menu.
+- *Ending:* newsletter sign-up, press, contact.
+- *What I took:* a useful **contrast** — scroll can also just reveal content. My project is the
+  other approach (scroll *is* the camera), but I borrowed the restraint: large confident
+  type, very few words on screen, and controls (rail, sound button) kept small.
+
+**5. Igloo Inc** — [igloo.inc](https://www.igloo.inc) (Awwwards Site of the Year 2024)
+- *What it is:* the site of a Web3 company and its portfolio.
+- *Scroll:* a real-time 3D world. An intro animation flows straight into the main scene, and
+  the camera travels through an icy landscape in three sections; each portfolio project is a
+  procedurally grown ice crystal.
+- *Transitions:* changes of area are hidden with frost, chromatic aberration and "glitch"
+  effects, so the world feels continuous. Music and sound effects react to what happens.
+- *Ending:* an interactive particle footer that reshapes for each link.
+- *What I took:* **sound makes a world physical** (my gate creak, doors, chandeliers and
+  trees), and transitions must never show a cut — I solve that by frame-matching my clips
+  rather than with effects.
+
+### Summary of what I took
+| Question | Answer for my project |
+|---|---|
+| How does the visitor know to scroll? | "Scroll to open the gate" with an animated line, bottom centre (like Montfort's "Swipe down"), fading on the first scroll |
+| How is text paced? | One short diary line per scene, in a script typeface, shown only while the camera settles (Emergence, Son Daven) |
+| How are scenes connected? | Frame-matched transitions with a real connecting move — doors, staircase, window, sky (Montfort, Igloo) |
+| What makes it feel like a world? | A single illustrated style throughout (Emergence) and scroll-synced sound (Igloo) |
+| How does it end? | The camera comes to rest over the Hamlet: "Her notebook ends here. Yours begins." + Plan your visit / Walk again (Son Daven's story-then-practical ending) |
+
+*Method:* Emergence and Montfort were scrolled in a browser and screenshotted; Son Daven and
+Made in Evolve were inspected while loaded (page structure, videos, canvases, smooth-scroll
+library); Igloo's WebGL scene was described from the
+[Awwwards case study](https://www.awwwards.com/igloo-inc-case-study.html).
 
 ## The journey — 4 scenes + 3 transitions (~28 s)
 
