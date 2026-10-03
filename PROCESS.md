@@ -31,6 +31,18 @@ detail without redrawing, so the watercolour style and the seams stay intact). T
 1080p to laptops/desktops and a 720p version (downscaled from the 1080p) to phones, where
 decoding a frame on every scroll step is more expensive.
 
+## Smoother scrolling (after testing the live site)
+Measured frame-to-frame motion with ffmpeg: at every clip seam the picture held still for 1–3
+frames, then the camera speed jumped (the start/end frames of Seedance clips are near-static).
+Fixes, no regeneration needed:
+- **Motion-balanced timeline:** `assets/video/motion.json` stores the motion between frames;
+  `app.js` shares out scroll distance 55 % by motion, 45 % by time, so still frames pass
+  quickly and the camera moves at a steady speed. In a simulation of 700 equal scroll steps,
+  stalls dropped from 31 to 8 and speed jumps from 47 to 0.
+- **Keyframe every 4 frames** (was 8): each seek decodes at most 3 extra frames, so scrubbing,
+  especially backwards, keeps up.
+- Slightly softer easing toward the scroll position.
+
 ## Credits (Magnific, approximate)
 Stills and edits ~2,000 · 480p test + previz chain ~8,900 · 720p final chain ~16,700 ·
 music 160 · re-rolls ~4,000 · 1080p upscale ~15,900 · **total ~48,000**.
