@@ -25,18 +25,18 @@ ffmpeg -v error -y -i "$film" -an -vf "scale=1280:720:flags=lanczos,format=yuv42
 
 # 2. Scene posters at the start of each scene (segment lengths match app.js: 5,4,4,4,4,4,4,4,5)
 dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 assets/video/journey.mp4)
-scale=$(python3 -c "print($dur/38)")
+scale=$(awk "BEGIN{print $dur/38}")
 names=(scene-1-gate scene-2-hall scene-3-bedchamber scene-4-gardens scene-5-hamlet)
 starts=(0 9 17 25 33)
 for i in 0 1 2 3 4; do
-  t=$(python3 -c "print(${starts[$i]}*$scale + 0.05)")
+  t=$(awk "BEGIN{print ${starts[$i]}*$scale + 0.05}")
   ffmpeg -v error -y -ss "$t" -i assets/video/journey.mp4 -frames:v 1 -c:v libwebp -quality 85 "assets/stills/${names[$i]}.webp"
 done
 
 # 3. Soundtrack: normalise loudness, gentle fades so the loop point is soft
 if [ -n "$music" ]; then
   mdur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$music")
-  fo=$(python3 -c "print(max(0, $mdur - 3))")
+  fo=$(awk "BEGIN{f=$mdur-3; print (f>0?f:0)}")
   ffmpeg -v error -y -i "$music" -af "loudnorm=I=-20:TP=-2,afade=t=in:d=2,afade=t=out:st=$fo:d=3" \
     -c:a libmp3lame -b:a 160k assets/audio/music.mp3
 fi
