@@ -93,7 +93,7 @@ body {
   margin: 0;
   font-family: var(--script);
   font-weight: 400;
-  font-size: clamp(3rem, 8vw, 6.25rem);
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
   line-height: 1.05;
   color: var(--rose-ink);
   text-wrap: balance;
