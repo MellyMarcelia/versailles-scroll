@@ -1,16 +1,26 @@
 /* Le Carnet de Marie-Antoinette — page styles
-   The film is the hero; the interface stays quiet, like ink notes on its pages. */
+   The film is the hero; the diary is written in a rose-ink calligraphic script. */
+
+@font-face {
+  font-family: "Parisienne";
+  src: url("assets/fonts/parisienne.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --paper: #fbf7f2;
   --ink: #3a3335;
   --ink-soft: #6b5f62;
   --rose: #a9475f;          /* deep rose: button + active rail (AA on paper) */
+  --rose-ink: #9a3f57;      /* diary ink */
   --blush: #f2c6cf;
   --gold: #b8975a;
   --glow: rgba(251, 247, 242, 0.82);
 
   --serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+  --script: "Parisienne", "Snell Roundhand", "Apple Chancery", cursive;
   --sans: "Jost", "Futura", "Helvetica Neue", Arial, sans-serif;
 
   --gutter: clamp(16px, 4vw, 56px);
@@ -81,11 +91,11 @@ body {
 }
 .intro__title {
   margin: 0;
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: clamp(2.6rem, 7vw, 5.25rem);
-  line-height: 0.98;
-  letter-spacing: -0.01em;
+  font-family: var(--script);
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 6.25rem);
+  line-height: 1.05;
+  color: var(--rose-ink);
   text-wrap: balance;
 }
 .intro__lede {
@@ -160,11 +170,11 @@ body {
 .entry__meta strong { font-weight: 500; color: var(--ink); }
 .entry__text {
   margin: 0;
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 500;
-  font-size: clamp(1.45rem, 2.9vw, 2.25rem);
-  line-height: 1.25;
+  font-family: var(--script);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.4vw, 2.7rem);
+  line-height: 1.3;
+  color: var(--rose-ink);
   text-wrap: pretty;
 }
 
@@ -240,10 +250,11 @@ body {
 }
 .finale__title {
   margin: 0;
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: clamp(2rem, 4.6vw, 3.4rem);
-  line-height: 1.05;
+  font-family: var(--script);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 5.4vw, 4rem);
+  line-height: 1.15;
+  color: var(--rose-ink);
   text-wrap: balance;
 }
 .finale__text { margin: 0.9rem 0 0; max-width: 26rem; }
