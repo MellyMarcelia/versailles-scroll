@@ -79,6 +79,7 @@
   var video = document.querySelector(".stage__video");
   var stillsBox = document.querySelector(".stage__stills");
   var intro = document.querySelector(".intro");
+  var cue = document.querySelector(".cue");
   var entriesBox = document.querySelector(".entries");
   var railList = document.querySelector(".rail__list");
   var finale = document.querySelector(".finale");
@@ -213,6 +214,8 @@
     intro.style.opacity = introV.toFixed(3);
     intro.style.transform = "translateY(calc(-50% - " + ((1 - introV) * 24).toFixed(1) + "px))";
     intro.style.visibility = introV < 0.01 ? "hidden" : "visible";
+    cue.style.opacity = introV.toFixed(3);
+    cue.style.visibility = introV < 0.01 ? "hidden" : "visible";
 
     var seg = segs[loc.index];
     var current = -1;
