@@ -110,7 +110,7 @@ body {
 .cue {
   position: fixed;
   left: 50%;
-  bottom: calc(clamp(20px, 5vh, 48px) + var(--safe-bottom));
+  bottom: calc(clamp(6px, 1.5vh, 16px) + var(--safe-bottom));
   transform: translateX(-50%);
   z-index: 3;
   display: flex;
@@ -361,7 +361,7 @@ body {
   .rail__list { gap: 0.6rem; }
   .entry, .finale { bottom: calc(76px + var(--safe-bottom)); }
   .entry { max-width: calc(100vw - 2 * var(--gutter) - 2rem); }
-  .cue { bottom: calc(118px + var(--safe-bottom)); }
+  .cue { bottom: calc(84px + var(--safe-bottom)); }
   .intro { top: 38%; }
 }
 
